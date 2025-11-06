@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public GameObject explosionFactory;
+    public AudioClip explosionSound;
     public float speed = 5.0f;
 
     Vector3 direction;
@@ -30,6 +32,18 @@ public class Enemy : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        GameObject manager = GameObject.Find("GameManager");
+        if (manager != null)
+        {
+            GameManager gm = manager.GetComponent<GameManager>();
+            gm.PlayEffectSound(explosionSound);
+
+            gm.SetScore(gm.GetScore() + 1);
+        }
+
+        GameObject explosion = Instantiate(explosionFactory);
+        explosion.transform.position = transform.position;
+
         Destroy(collision.gameObject);
         Destroy(gameObject);
     }
