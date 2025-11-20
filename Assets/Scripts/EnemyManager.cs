@@ -60,7 +60,7 @@ public class EnemyManager : MonoBehaviour
                 enemy.SetActive(true);
             }
             currentTime = 0;
-            createTime = Random.Range(minTime, Mathf.Max(1.0f, maxTime-(0.1f*spawnCount)));
+            createTime = Random.Range(minTime, Mathf.Max(1.0f, maxTime-(0.2f*spawnCount)));
             spawnCount++;
         }
     }
