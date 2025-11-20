@@ -24,6 +24,22 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        direction = Vector3.down;
+
+        int randValue = Random.Range(0, 10);
+        if(randValue < 8)
+        {
+            GameObject target = GameObject.Find("Player");
+            if(target)
+            {
+                direction = target.transform.position - transform.position;
+                direction.Normalize();
+            }
+        }
+    }
+
     void Update()
     {
         //transform.position += Vector3.down * speed * Time.deltaTime;
@@ -32,6 +48,7 @@ public class Enemy : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        /*
         GameObject manager = GameObject.Find("GameManager");
         if (manager != null)
         {
@@ -40,11 +57,35 @@ public class Enemy : MonoBehaviour
 
             gm.SetScore(gm.GetScore() + 1);
         }
+        */
+        GameManager.instance.PlayEffectSound(explosionSound);
+        //GameManager.instance.SetScore(GameManager.instance.GetScore() + 1);
+        GameManager.instance.score++;
 
         GameObject explosion = Instantiate(explosionFactory);
         explosion.transform.position = transform.position;
 
-        Destroy(collision.gameObject);
-        Destroy(gameObject);
+        if (collision.gameObject.name.Contains("Bullet"))
+        {
+            collision.gameObject.SetActive(false);
+            GameManager.instance.bullets++;
+
+            PlayerFire plfire = GameObject.Find("Player").GetComponent<PlayerFire>();
+            plfire.bulletObjectPool.Add(collision.gameObject);
+        }
+        else if (collision.gameObject.name.Contains("Player"))
+        {
+            GameManager.instance.GameOver();
+            Destroy(collision.gameObject);
+        }
+        else
+        {
+            Destroy(collision.gameObject);
+        }
+        //Destroy(gameObject);
+        gameObject.SetActive(false);
+
+        EnemyManager enmanager = GameObject.Find("Enemy Manager").GetComponent<EnemyManager>();
+        enmanager.enemyObjectPool.Add(gameObject);
     }
 }
